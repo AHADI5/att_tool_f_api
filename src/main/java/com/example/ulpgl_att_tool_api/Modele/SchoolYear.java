@@ -14,14 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UniteEnseignement {
+public class SchoolYear {
     @Id
-    private Long ueID;
-    private String name  ;
-    private String description;
-    private String titular  ;
-    private int credits;
-    @OneToMany(mappedBy = "uniteEnseignement" , cascade = CascadeType.ALL)
-    private List<ElementConstitutif> elementConstitutifList;
-
+    private Long schoolYearId;
+    private int startYear;
+    private int endYear;
+    @OneToMany(mappedBy = "schoolYear" , cascade = CascadeType.ALL)
+    private List<Attendance> attendanceList ;
 }
