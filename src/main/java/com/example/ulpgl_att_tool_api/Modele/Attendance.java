@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,6 +24,8 @@ public class Attendance {
     private Student student  ;
     @ManyToOne
     private SchoolYear schoolYear;
+    private LocalDateTime dateTime  ;
+
 
 
 
