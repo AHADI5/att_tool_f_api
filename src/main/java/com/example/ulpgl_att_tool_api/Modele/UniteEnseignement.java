@@ -4,9 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter @Setter
 public class UniteEnseignement {
     @Id
     private Long ueID;
@@ -21,6 +20,8 @@ public class UniteEnseignement {
     private String description;
     private String titular  ;
     private int credits;
+    private String filiare ;
+    private int level ;
     @OneToMany(mappedBy = "uniteEnseignement" , cascade = CascadeType.ALL)
     private List<ElementConstitutif> elementConstitutifList;
 
