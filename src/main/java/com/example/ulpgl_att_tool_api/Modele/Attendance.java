@@ -1,12 +1,7 @@
 package com.example.ulpgl_att_tool_api.Modele;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,21 +9,26 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class Attendance {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attendanceID;
+
     @ManyToOne
-    private ElementConstitutif elementConstitutif ;
+    @JoinColumn(name = "ec_id")
+    private ElementConstitutif elementConstitutif;
+
     @ManyToOne
-    private Student student  ;
+    @JoinColumn(name = "student_id")
+    private Student student;
+
     @ManyToOne
+    @JoinColumn(name = "school_year_id")
     private SchoolYear schoolYear;
-    private LocalDateTime dateTime  ;
 
-
-
-
-
-
+    private LocalDateTime dateTime;
 }
+

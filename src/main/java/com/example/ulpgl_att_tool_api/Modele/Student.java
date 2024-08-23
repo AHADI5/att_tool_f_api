@@ -12,13 +12,12 @@ import java.util.List;
 @Getter @Setter
 public class Student {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private long studentID  ;
-    private String studentName ;
-    private long studentMat  ;
-    @OneToMany(mappedBy = "student" , cascade = CascadeType.ALL)
-    private List<Attendance>  attendances ;
+    private long studentID;
+    private String studentName;
+    private long studentMat;
 
-
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Attendance> attendances;
 }

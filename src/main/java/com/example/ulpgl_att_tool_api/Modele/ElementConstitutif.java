@@ -1,9 +1,6 @@
 package com.example.ulpgl_att_tool_api.Modele;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -16,14 +13,18 @@ import java.util.List;
 public class ElementConstitutif {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ecID;
     private String ecName;
-    private int cmiHours ;
-    private int tdHours ;
-    private int tpHours  ;
-    @ManyToOne
-    private UniteEnseignement uniteEnseignement ;
-    @OneToMany(mappedBy = "elementConstitutif")
-    private List<Attendance> attendanceList  ;
+    private int cmiHours;
+    private int tdHours;
+    private int tpHours;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "ue_id")
+    private UniteEnseignement uniteEnseignement;
+
+    @OneToMany(mappedBy = "elementConstitutif", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Attendance> attendanceList;
 }
+

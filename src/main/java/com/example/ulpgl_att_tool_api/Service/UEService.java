@@ -6,92 +6,105 @@ import com.example.ulpgl_att_tool_api.Modele.ElementConstitutif;
 import com.example.ulpgl_att_tool_api.Modele.UniteEnseignement;
 import com.example.ulpgl_att_tool_api.Repository.ECRepo;
 import com.example.ulpgl_att_tool_api.Repository.UERepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public record UEService(
-        UERepo uERepo ,
+        UERepo uERepo,
         ECRepo ecRepo
 ) {
 
-    public List<UEDto> registerUE(List<UEDto> ueDtoList ) {
-        List<UniteEnseignement> UniteEnseignementList = new ArrayList<>();
-        List<UEDto> UEDtoList = new ArrayList<>();
+    public List<UEDto> registerUE(List<UEDto> ueDtoList) {
+        List<UniteEnseignement> uniteEnseignementList = new ArrayList<>();
+        List<UEDto> ueDtoListResult = new ArrayList<>();
+
         for (UEDto ueDto : ueDtoList) {
+            // Initialize a new list of ElementConstitutif for each UniteEnseignement
             List<ElementConstitutif> elementConstitutifList = new ArrayList<>();
+
             for (ECDto ecDto : ueDto.elementConstitutifList()) {
-                ElementConstitutif elementConstitutif = ElementConstitutif
-                        .builder()
+                ElementConstitutif elementConstitutif = ElementConstitutif.builder()
+                        .ecName(ecDto.ecName())
                         .tpHours(ecDto.tpHours())
                         .cmiHours(ecDto.cmiHours())
                         .tdHours(ecDto.tdHours())
                         .build();
-                elementConstitutifList.add(ecRepo.save(elementConstitutif));
+                elementConstitutifList.add(elementConstitutif);
             }
-            UniteEnseignement uniteEnseignement = UniteEnseignement
-                    .builder()
+
+            UniteEnseignement uniteEnseignement = UniteEnseignement.builder()
                     .level(ueDto.level())
                     .credits(ueDto.credits())
                     .description(ueDto.description())
                     .filiare(ueDto.filiare())
                     .titular(ueDto.titular())
                     .name(ueDto.name())
-                    .elementConstitutifList(elementConstitutifList)
-                    .build() ;
-            UniteEnseignementList.add(uERepo.save(uniteEnseignement)) ;
+                    .elementConstitutifList(elementConstitutifList) // Associate ECs with UE
+                    .build();
 
+            // Associate UniteEnseignement with each ElementConstitutif
+            for (ElementConstitutif elementConstitutif : elementConstitutifList) {
+                elementConstitutif.setUniteEnseignement(uniteEnseignement);
+            }
+
+            // Save UniteEnseignement, which cascades to ElementConstitutif
+            uniteEnseignementList.add(uERepo.save(uniteEnseignement));
         }
 
-        for (UniteEnseignement uniteEnseignement : UniteEnseignementList) {
-            UEDto uedto = new UEDto(
+        // Convert saved UniteEnseignements to DTOs
+        for (UniteEnseignement uniteEnseignement : uniteEnseignementList) {
+            UEDto ueDtoResult = new UEDto(
                     uniteEnseignement.getName(),
                     uniteEnseignement.getDescription(),
-                    uniteEnseignement.getTitular() ,
+                    uniteEnseignement.getTitular(),
                     uniteEnseignement.getCredits(),
                     uniteEnseignement.getFiliare(),
                     uniteEnseignement.getLevel(),
                     getEcSimpleForm(uniteEnseignement.getElementConstitutifList())
-
             );
-            UEDtoList.add(uedto);
+            ueDtoListResult.add(ueDtoResult);
         }
-        return UEDtoList;
 
+        return ueDtoListResult;
     }
 
-    public List<ECDto> getEcSimpleForm (List<ElementConstitutif> elementConstitutifList) {
+    public List<ECDto> getEcSimpleForm(List<ElementConstitutif> elementConstitutifList) {
         List<ECDto> ecDtoList = new ArrayList<>();
         for (ElementConstitutif elementConstitutif : elementConstitutifList) {
             ECDto ecDto = new ECDto(
-                    elementConstitutif.getEcName() ,
+                    elementConstitutif.getEcName(),
                     elementConstitutif.getCmiHours(),
                     elementConstitutif.getTdHours(),
                     elementConstitutif.getTpHours()
             );
             ecDtoList.add(ecDto);
-
         }
+        log.info("Element constitutif : {}", ecDtoList);
         return ecDtoList;
     }
+
     public List<UEDto> syncUEDtoList() {
-        List<UEDto> UEDtoList = new ArrayList<>();
-        List<UniteEnseignement> uniteEnseignements  = uERepo.findAll() ;
+        List<UEDto> ueDtoList = new ArrayList<>();
+        List<UniteEnseignement> uniteEnseignements = uERepo.findAll();
+
         for (UniteEnseignement uniteEnseignement : uniteEnseignements) {
-            UEDto UEDto = new UEDto(
-                    uniteEnseignement.getName() ,
+            UEDto ueDto = new UEDto(
+                    uniteEnseignement.getName(),
                     uniteEnseignement.getDescription(),
                     uniteEnseignement.getTitular(),
-                    uniteEnseignement.getCredits() ,
+                    uniteEnseignement.getCredits(),
                     uniteEnseignement.getFiliare(),
-                    uniteEnseignement.getLevel() ,
+                    uniteEnseignement.getLevel(),
                     getEcSimpleForm(uniteEnseignement.getElementConstitutifList())
-            ) ;
-            UEDtoList.add(UEDto);
+            );
+            ueDtoList.add(ueDto);
         }
-        return UEDtoList;
-    }
 
+        return ueDtoList;
+    }
 }

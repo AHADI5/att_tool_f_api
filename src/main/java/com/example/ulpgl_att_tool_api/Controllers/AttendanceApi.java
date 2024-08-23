@@ -31,7 +31,7 @@ public record AttendanceApi(
         return  studentService.syncStudent();
     }
 
-    @PostMapping("/courses")
+    @PostMapping("/courses/create")
     public List<UEDto> registerCourses (@RequestBody List<UEDto> ueDto) {
         return ueService.registerUE(ueDto);
     }
